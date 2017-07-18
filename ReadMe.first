@@ -1,0 +1,50 @@
+ExecDTE.py : Executes delayed transfer entropy measures given an
+input file called "dados.execucao". Data files have to be on
+a folder called "dados" (see SinaisLeitura.py)
+
+These variables can be set 
+
+lag    =   105  # max lag in miliseconds
+NBins  =   32   # number of bins
+NSur   =   10   # number of surrogate for each analysis
+
+The results are:
+name_x_y_REF.dte
+name_x_y_SUR.dte
+
+x and y are one of four data present in name.txt.gz. 
+Data are recorded in plain text file to be printed from gnuplot.
+REF means it is the DTE from the combination of each one of signals of data
+SUR means it is the DTE from the surrogate data from input/output signals
+the number of surrogate signals is set in NSur
+
+.dte files are read with 
+
+def getTEData(nome,fs,NSur):
+	try:
+		#print(nome2)
+		fdte=open(nome+'_REF.dte', "rb" )
+		DTE = pickle.load(fdte)
+		fdte.close()	
+	
+		t = 1/float(fs)*1000*np.asarray(DTE[1])
+		x = DTE[0]
+		#y = savgol_filter(x, 51, 7)
+		y = np.asarray(y)	
+		fdtesur=open(nome+'_SUR.dte', "rb" )
+		DTEsur = pickle.load(fdtesur)
+		fdtesur.close()
+		YS = np.zeros((NSur, len(t)))
+		for j in range(NSur):
+			xs = DTEsur[j][0]
+			YS[j][:]=xs
+		 
+	except IOError: 
+		t = []
+		x = []
+		y = []
+		YS= []
+	return t,x,y,YS  
+
+
+
